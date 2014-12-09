@@ -49,3 +49,22 @@ vector<Caixa> Caixas::caixas(COORD pos, short width, short height)
     }
     return caixas;
 }
+
+// devolve ás caixas que comtêm um determinado ponto
+vector<Caixa> Caixas::contem(COORD ponto)
+{
+    vector<Caixa> caixas;
+
+    for (Caixa caixa : _caixas) {
+        // coordenada da caixa
+        COORD P = caixa.pos();
+        COORD size = caixa.size();
+
+        // dentro da caixa
+        if (NOR(ponto.X - P.X < 0, ponto.X - P.X > size.X) &&
+            NOR(ponto.Y - P.Y < 0, ponto.Y - P.Y > size.Y)) {
+            caixas.push_back(caixa);
+        }
+    }
+    return caixas;
+}

@@ -51,6 +51,9 @@ private:
     vector<Caixa> _caixas;
 
 public:
+
+    COORD size() { return _max; }
+
     // adiciona uma caixa
     Caixas &caixa(COORD pos, short width, short height, char ch = '#', WORD attr = 8);
 
@@ -59,6 +62,9 @@ public:
 
     // devolve caixas numa determinada zona
     vector<Caixa> caixas(COORD pos, short width, short height);
+
+    // devolve caixas que contêm um determinado ponto
+    vector<Caixa> contem(COORD ponto);
 
     // construtor
     Caixas(short x = 120, short y = 60) { _max = { x, y }; }
