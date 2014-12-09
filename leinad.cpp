@@ -91,18 +91,26 @@ Leinad &Leinad::down(Jogador &jogador)
 
     if (_colision(pos)) return *this;
 
-    if (pos.Y > _grelha->height() - 2) {
-        pos.Y = _grelha->height() - 2;
 
-        if (pos.Y < _M.Y + _map.Y) {
+	if (pos.Y + _M.Y < _map.Y -1)
+	// penúltima linha da grelha
+	if (pos.Y > _grelha->height() - 2) {
+        // manter na penúltima linha ...
+		pos.Y = _grelha->height() - 2;
+
+		// deslocar o mapa
+		if (pos.Y < _M.Y + _map.Y) {
             _M.Y++;
-
             // desenhar jogador
             render(jogador);
-
             //TODO desenhar outros jogadores
         }
     }
+
+	// última linha da grelha
+	if (pos.Y > _grelha->height() - 1) {
+		pos.Y = _grelha->height() - 1;
+	}
 
     jogador.pos(pos.X, pos.Y);
     return *this;
@@ -132,6 +140,7 @@ void Leinad::_info(COORD c)
     cout << "S(" << c.X + G.X << "," << c.Y + G.Y << ")  ";
     cout << "M(" << c.X + _M.X << "," << c.Y + _M.Y << ")  ";
     cout << "G(" << c.X << "," << c.Y << ")  ";
+	cout << "MAPA: " << _map.X << "*" << _map.Y << "  ";
 
     // restore console attributes
     console.textColor(textColor);

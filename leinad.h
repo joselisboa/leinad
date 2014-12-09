@@ -14,7 +14,7 @@ class Leinad
 {
     Caixas *_caixas = nullptr;
     COORD _M;
-    COORD _map;
+    COORD _map;// dimensão do mapa
     COORD _screen;
     Grelha *_grelha;
     void _draw(CHAR_INFO, COORD);
@@ -30,7 +30,11 @@ public:
     Leinad &down(Jogador &);
     Leinad &M(COORD M) { _M = M; return *this; }
     COORD M() { return _M; }
-    void caixas(Caixas *caixas) { _caixas = caixas; }
+    void caixas(Caixas *caixas)
+	{
+		_caixas = caixas;
+		_map = _caixas->size();
+	}
 
     Leinad(short, short, Grelha *);
     ~Leinad();
