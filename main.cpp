@@ -23,13 +23,19 @@ int main(int argc, char *varc)
 
     SetConsoleTitle(TEXT("Leinad"));
 
+    // grelha do mapa
+    Grelha grelha(GRELHA_WIDTH, GRELHA_HEIGHT, GRELHA_OFFSET);
+
+    // o jogo
+    Leinad leinad(CONSOLA_WIDTH, CONSOLA_HEIGHT, &grelha);
+
+    // elementos estáticos
+    Caixas caixas;
     ifstream mapa(MAPA);
     if (!mapa) {
         cout << "> ERRO a abrir o ficheiro " << MAPA << endl;
         return 1;
     }
-
-    Caixas caixas;
     short x, y, width, height;
     char ch;
     int attr;
@@ -38,14 +44,7 @@ int main(int argc, char *varc)
         caixas.caixa(COORD{ x, y }, width, height, ch, attr);
     }
 
-    //return 0;
-
-    // grelha do mapa
-    Grelha grelha(GRELHA_WIDTH, GRELHA_HEIGHT, GRELHA_OFFSET);
-
-    // o jogo
-    Leinad leinad(CONSOLA_WIDTH, CONSOLA_HEIGHT, &grelha);
-
+    // passar as "caixas" ao jogo
     leinad.caixas(&caixas);
 
     //TEST iniciar o jogo
