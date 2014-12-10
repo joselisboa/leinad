@@ -1,3 +1,10 @@
+//
+// Leinad
+//
+// description: School project for OOP (Object Oriented Programming)
+// author: José Vieira Lisboa
+// url: https://github.com/joselisboa/leinad
+//
 #ifndef JOGADOR_H
 #define JOGADOR_H
 
