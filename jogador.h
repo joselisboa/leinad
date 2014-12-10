@@ -8,7 +8,7 @@
 #ifndef JOGADOR_H
 #define JOGADOR_H
 
-#include "c:\\htdocs\\ze\\ze.h"
+#include "ze.h"
 
 using namespace std;
 
