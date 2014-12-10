@@ -12,75 +12,57 @@ using namespace std;
 //-------
 class Leinad
 {
-    Caixas *_caixas = nullptr;
-    COORD _M;
-    COORD _map;// dimensão do mapa
+private:
+    // dimensão da consola
     COORD _screen;
+
+    // caixas (elementos estáticos)
+    Caixas *_caixas = nullptr;
+
+    // dimensão do mapa
+    COORD _map;
+
+    // offset da grelha no mapa
+    COORD _M;
+
+    // grelha do mapa
     Grelha *_grelha;
+
+    // painel de pontuação
+    Grelha *_painel;
+
+    // barra de informação
+    Grelha *_barra;
+
+    // funções ajudantes
     void _draw(CHAR_INFO, COORD);
     void _info(COORD c);
+    void info(string);
     bool _colision(COORD pos, char = '#');
 
+    //TESTE
+    Jogador dummie;
+
 public:
-    Leinad &drawPlayer(Jogador &, bool flag = true);
-    Leinad &move(Jogador &);
+    BOOL menu();
+    BOOL move();
+    COORD M() { return _M; }
     Leinad &right(Jogador &);
     Leinad &left(Jogador &);
     Leinad &up(Jogador &);
     Leinad &down(Jogador &);
     Leinad &M(COORD M) { _M = M; return *this; }
-    COORD M() { return _M; }
-    void caixas(Caixas *caixas)
-	{
-		_caixas = caixas;
-		_map = _caixas->size();
-	}
+    Leinad &caixas(Caixas *caixas) { _caixas = caixas, _map = _caixas->size(); return *this; }
+    Leinad &drawPlayer(Jogador &, bool flag = true);
+    Leinad &drawCaixa(Caixa &caixa);
+    Leinad &init();
+    Leinad &render(Jogador);
 
     Leinad(short, short, Grelha *);
     ~Leinad();
 
     //TODO mover para privado?
     Ze console;
-
-    void info(string);
-
-    Leinad &drawCaixa(Caixa &caixa)
-    {
-        for (int x = caixa.pos().X; x < caixa.pos().X + caixa.width(); x++) {
-            for (int y = caixa.pos().Y; y < caixa.pos().Y + caixa.height(); y++) {
-                //TODO ponto pertence à grelha do mapa?
-
-				short X = x - _M.X, Y = y - _M.Y;
-				if (!(X < 0) && !(X >= _grelha->width()) && !(Y < 0) && !(Y >= _grelha->height()))
-					_grelha->pos(COORD{ X , Y }, caixa.ci());
-            }
-        }
-        return *this;
-    }
-
-    Leinad &init(Jogador jogador) { return render(jogador); }
-    Leinad &render(Jogador jogador)
-    {
-        // setup grelha
-        (*_grelha).fill('.', console.BLUE | console.BLUE_FADE << 4);
-
-        // desenhar as caixas
-        if (_caixas != nullptr)
-            for (Caixa caixa : _caixas->caixas(_M, 60, 30)) {
-				drawCaixa(caixa);
-        }
-
-        // escrever na consola
-        (*_grelha).write(console.output_handle());
-
-        //TEMP mostrar o jogador
-        drawPlayer(jogador);
-
-        ////TODO desenhar outros jogadores
-        //drawPlayer(jogador);// desenhar jogador
-
-        return *this;
-    }
 };
 
 #endif

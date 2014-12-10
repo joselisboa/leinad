@@ -3,7 +3,51 @@
 
 using namespace std;
 
-Leinad &Leinad::move(Jogador &jogador)
+BOOL Leinad::menu()
+{
+    console.background(console.MAGENTA_FADE);
+    system("cls");
+
+    while (true) {
+
+        // ler input da consola
+        ReadConsoleInput(console.input_handle(), &console.input_record, 1, &console.info);
+        console.cursorPosition(0, 0);
+
+        // evento do teclado
+        if (console.input_record.EventType == KEY_EVENT && console.input_record.Event.KeyEvent.bKeyDown) {
+            switch (console.input_record.Event.KeyEvent.wVirtualKeyCode) {
+            case VK_RIGHT:
+                cout << "RIGHT";
+                break;
+            case VK_LEFT:
+                cout << "LEFT";
+                break;
+            case VK_UP:
+                cout << "UP";
+                break;
+            case VK_DOWN:
+                cout << "DOWN";
+                break;
+            // SAIR (escape)
+            case 27: return false;
+            // CONTINUAR
+            case 13: return true;
+            default:
+                cout << (char)console.input_record.Event.KeyEvent.wVirtualKeyCode;
+            }
+            cout << " (" << console.input_record.Event.KeyEvent.wVirtualKeyCode << ")    ";
+        }
+
+        // limpar o buffer de input da consola
+        FlushConsoleInputBuffer(console.input_handle());
+    }
+
+    // sair normalmente ...
+    return true;
+}
+
+BOOL Leinad::move()
 {
     // ler input da consola
     ReadConsoleInput(console.input_handle(), &console.input_record, 1, &console.info);
@@ -11,33 +55,39 @@ Leinad &Leinad::move(Jogador &jogador)
     // evento do teclado
     if (console.input_record.EventType == KEY_EVENT && console.input_record.Event.KeyEvent.bKeyDown) {
         // apaga o jogador
-        drawPlayer(jogador, false);
+        drawPlayer(dummie, false);
 
         // nova posição do Jogador
         switch (console.input_record.Event.KeyEvent.wVirtualKeyCode) {
         case VK_RIGHT:
-            right(jogador);
+            right(dummie);
             break;
         case VK_LEFT:
-            left(jogador);
+            left(dummie);
             break;
         case VK_UP:
-            up(jogador);
+            up(dummie);
             break;
         case VK_DOWN:
-            down(jogador);
+            down(dummie);
             break;
+        case 27: return false;
         default:;
+
         }
         // desenha o jogador
-        drawPlayer(jogador, true);
+        drawPlayer(dummie, true);
+
+        console.cursorPosition(_screen.X - 16, _screen.Y-1);
+        console.textColor(console.GREEN | console.GREEN_FADE << 4);
+        cout << "TECLA(" << console.input_record.Event.KeyEvent.wVirtualKeyCode << ")  ";
     }
 
     // limpar o buffer de input da consola
     FlushConsoleInputBuffer(console.input_handle());
 
-    // acorrentar ...
-    return *this;
+    // saída normal ...
+    return true;
 }
 
 Leinad &Leinad::right(Jogador &jogador)
@@ -145,7 +195,7 @@ Leinad &Leinad::down(Jogador &jogador)
     }
 
     // última linha da grelha
-    if (pos.Y > _grelha->height() - 1) pos.Y = _grelha->height() - 1;
+    else if (pos.Y > _grelha->height() - 1) pos.Y = _grelha->height() - 1;
 
     jogador.pos(pos.X, pos.Y);
 
@@ -177,7 +227,7 @@ void Leinad::_info(COORD c)
     cout << "S(" << c.X + G.X << "," << c.Y + G.Y << ")  ";// posição na consola
     cout << "M(" << c.X + _M.X << "," << c.Y + _M.Y << ")  ";// posição no mapa
     cout << "P(" << c.X << "," << c.Y << ")  ";// jogador
-    cout << "_M( " << _M.X << "," << _M.Y << ")  ";// grelha
+    cout << "_M(" << _M.X << "," << _M.Y << ")  ";// grelha
     cout << "MAPA: " << _map.X << "*" << _map.Y << "  ";// tamanho do mapa
 
     // restore console attributes
@@ -201,32 +251,83 @@ Leinad &Leinad::drawPlayer(Jogador &jogador, bool flag)
     return *this;
 }
 
+Leinad &Leinad::drawCaixa(Caixa &caixa)
+{
+    for (int x = caixa.pos().X; x < caixa.pos().X + caixa.width(); x++) {
+        for (int y = caixa.pos().Y; y < caixa.pos().Y + caixa.height(); y++) {
+            //TODO ponto pertence à grelha do mapa?
+
+            short X = x - _M.X, Y = y - _M.Y;
+            if (!(X < 0) && !(X >= _grelha->width()) && !(Y < 0) && !(Y >= _grelha->height()))
+                _grelha->pos(COORD{ X, Y }, caixa.ci());
+        }
+    }
+    return *this;
+}
+
+Leinad &Leinad::init() {
+    (*_painel).fill(' ', console.CYAN_FADE << 4).write(console.output_handle());
+    (*_barra).fill(' ', console.GREEN_FADE << 4).write(console.output_handle());
+    return render(dummie);
+}
+
+Leinad &Leinad::render(Jogador jogador)
+{
+    // setup grelha
+    (*_grelha).fill('.', console.BLUE | console.BLUE_FADE << 4);
+
+    // desenhar as caixas
+    if (_caixas != nullptr) {
+        for (Caixa caixa : _caixas->caixas(_M, 60, 30)) {
+            drawCaixa(caixa);
+        }
+    }
+
+    // escrever na consola
+    (*_grelha).write(console.output_handle());
+
+    //TEMP mostrar o jogador
+    drawPlayer(jogador);
+
+    ////TODO desenhar outros jogadores
+    //drawPlayer(jogador);// desenhar jogador
+
+    return *this;
+}
+
 Leinad::Leinad(short largura, short altura, Grelha *grelha)
 {
+    // não mostrar o cursor
+    console.hideCursor();
     // tamanho janela
     _screen.X = largura, _screen.Y = altura;
     console.screenSize(largura, altura);
-
+    //
     _grelha = grelha;
-
     //DEFAULT posição da grelha no mapa é a origem
     _M = { 0, 0 };
-
     //DEFAULT mapa tem dimensão da grelha
     _map = _grelha->size();
-
-    //TODO init grelha
+    // painel
+    _painel = new Grelha(16, _map.Y, COORD{ 0, 0 });
+    // barra
+    _barra = new Grelha(largura, 1, COORD{ 0, altura - 1 });
+    //TESTE um jogador (Jogador serão carregados dum ficheiro)
+    dummie.pos(30, 15).imagem('@', console.CYAN | console.BLUE_FADE << 4);
 }
 
 Leinad::~Leinad()
 {
-    //delete[] _sector;
+    delete _barra;
+    delete _painel;
 }
 
 void Leinad::info(string msg)
 {
     WORD textColor = console.textColor();
-    SetConsoleCursorPosition(console.output_handle(), COORD{ 10, _screen.Y - 1 });
+
+    console.cursorPosition(COORD{ 10, _screen.Y - 1 });
+    //SetConsoleCursorPosition(console.output_handle(), COORD{ 10, _screen.Y - 1 });
     console.textColor(console.GREEN | console.GREEN_FADE << 4);
     cout << " < " << msg << ">   ";
     console.textColor(textColor);
