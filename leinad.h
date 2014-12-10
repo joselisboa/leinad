@@ -50,7 +50,9 @@ public:
             for (int y = caixa.pos().Y; y < caixa.pos().Y + caixa.height(); y++) {
                 //TODO ponto pertence à grelha do mapa?
 
-                _grelha->pos(COORD{ x -_M.X , y - _M.Y }, caixa.ci());
+				short X = x - _M.X, Y = y - _M.Y;
+				if (!(X < 0) && !(X >= _grelha->width()) && !(Y < 0) && !(Y >= _grelha->height()))
+					_grelha->pos(COORD{ X , Y }, caixa.ci());
             }
         }
         return *this;
@@ -65,7 +67,7 @@ public:
         // desenhar as caixas
         if (_caixas != nullptr)
             for (Caixa caixa : _caixas->caixas(_M, 60, 30)) {
-                drawCaixa(caixa);
+				drawCaixa(caixa);
         }
 
         // escrever na consola

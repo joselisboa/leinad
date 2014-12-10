@@ -43,15 +43,25 @@ Leinad &Leinad::move(Jogador &jogador)
 Leinad &Leinad::right(Jogador &jogador)
 {
     COORD pos = jogador.pos();
-
-    //TODO verify grid
     pos.X++;
+
     if (_colision(pos)) return *this;
 
-    // verificar que o jogador não sai dos limites
-    if (pos.X > _grelha->width() -1){//   console.screen_info.srWindow.Right) {
-        pos.X = _grelha->width() - 1;// console.screen_info.srWindow.Right;
+    // existe mapa não visível e penúltima linha da grelha
+    if (pos.X + _M.X < _map.X - 1 && pos.X > _grelha->width() - 2) {
+        // manter na penúltima linha ...
+        pos.X = _grelha->width() - 2;
+        // deslocar o mapa
+        if (pos.X < _M.X + _map.X) {
+            _M.X++;
+            // desenhar jogador
+            render(jogador);
+            //TODO desenhar outros jogadores
+        }
     }
+
+    // última linha da grelha
+    if (pos.X > _grelha->width() - 1) pos.X = _grelha->width() - 1;
 
     jogador.pos(pos.X, pos.Y);
 
@@ -62,12 +72,27 @@ Leinad &Leinad::left(Jogador &jogador)
 {
     COORD pos = jogador.pos();
     pos.X--;
+
     if (_colision(pos)) return *this;
 
-    if (pos.X < console.screen_info.srWindow.Left)
-        pos.X = console.screen_info.srWindow.Left;
+    // existe mapa não visível e segunda linha da grelha
+    if (_M.X > 0 && pos.X == 0) {
+        // manter na penúltima linha da grelha
+        pos.X = 1;
+        // deslocar o mapa
+        if (_M.X > 0) {
+            _M.X--;
+            // desenhar jogador
+            render(jogador);
+            //TODO desenhar outros jogadores
+        }
+    }
+
+    // manter primeira linha ...
+    if (pos.X < 0) pos.X = 0;
 
     jogador.pos(pos.X, pos.Y);
+
     return *this;
 }
 
@@ -75,12 +100,27 @@ Leinad &Leinad::up(Jogador &jogador)
 {
     COORD pos = jogador.pos();
     pos.Y--;
+
     if (_colision(pos)) return *this;
 
-    if (pos.Y < console.screen_info.srWindow.Top)
-        pos.Y = console.screen_info.srWindow.Top;
+    // existe mapa não visível e segunda linha da grelha
+    if (_M.Y > 0 && pos.Y == 0) {
+        // manter na penúltima linha da grelha
+        pos.Y = 1;
+        // deslocar o mapa
+        if (_M.Y > 0) {
+            _M.Y--;
+            // desenhar jogador
+            render(jogador);
+            //TODO desenhar outros jogadores
+        }
+    }
+
+    // manter primeira linha ...
+    if (pos.Y < 0 ) pos.Y = 0;
 
     jogador.pos(pos.X, pos.Y);
+
     return *this;
 }
 
@@ -91,15 +131,12 @@ Leinad &Leinad::down(Jogador &jogador)
 
     if (_colision(pos)) return *this;
 
-
-	if (pos.Y + _M.Y < _map.Y -1)
-	// penúltima linha da grelha
-	if (pos.Y > _grelha->height() - 2) {
+    // existe mapa não visível e penúltima linha da grelha
+    if (pos.Y + _M.Y < _map.Y -1 && pos.Y > _grelha->height() - 2) {
         // manter na penúltima linha ...
-		pos.Y = _grelha->height() - 2;
-
-		// deslocar o mapa
-		if (pos.Y < _M.Y + _map.Y) {
+        pos.Y = _grelha->height() - 2;
+        // deslocar o mapa
+        if (pos.Y < _M.Y + _map.Y) {
             _M.Y++;
             // desenhar jogador
             render(jogador);
@@ -107,12 +144,11 @@ Leinad &Leinad::down(Jogador &jogador)
         }
     }
 
-	// última linha da grelha
-	if (pos.Y > _grelha->height() - 1) {
-		pos.Y = _grelha->height() - 1;
-	}
+    // última linha da grelha
+    if (pos.Y > _grelha->height() - 1) pos.Y = _grelha->height() - 1;
 
     jogador.pos(pos.X, pos.Y);
+
     return *this;
 }
 
@@ -137,10 +173,12 @@ void Leinad::_info(COORD c)
 
     SetConsoleCursorPosition(console.output_handle(), COORD{ 0, _screen.Y - 1 });
     console.textColor(console.GREEN | console.GREEN_FADE << 4);
-    cout << "S(" << c.X + G.X << "," << c.Y + G.Y << ")  ";
-    cout << "M(" << c.X + _M.X << "," << c.Y + _M.Y << ")  ";
-    cout << "G(" << c.X << "," << c.Y << ")  ";
-	cout << "MAPA: " << _map.X << "*" << _map.Y << "  ";
+    cout << "O(" << G.X << "," << G.Y << ")  ";// offset da grelha (em relação à consola)
+    cout << "S(" << c.X + G.X << "," << c.Y + G.Y << ")  ";// posição na consola
+    cout << "M(" << c.X + _M.X << "," << c.Y + _M.Y << ")  ";// posição no mapa
+    cout << "P(" << c.X << "," << c.Y << ")  ";// jogador
+    cout << "_M( " << _M.X << "," << _M.Y << ")  ";// grelha
+    cout << "MAPA: " << _map.X << "*" << _map.Y << "  ";// tamanho do mapa
 
     // restore console attributes
     console.textColor(textColor);
