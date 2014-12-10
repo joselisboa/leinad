@@ -47,8 +47,8 @@ vector<Caixa> Caixas::caixas(COORD pos, short width, short height)
         P[3] = { P[0].X + caixa.width() - 1, P[0].Y + caixa.height() - 1 };
         for (int i = 0; i < 4; i++) {
             // dentro da zona
-            if (NOR(P[i].X - pos.X < 0, P[i].X - pos.X > width) &&
-                NOR(P[i].Y - pos.Y < 0, P[i].Y - pos.Y > height)) {
+            if (NOR(P[i].X - pos.X < 0, P[i].X - pos.X > width + 1) &&
+                NOR(P[i].Y - pos.Y < 0, P[i].Y - pos.Y > height + 1)) {
                 caixas.push_back(caixa);
                 break;
             }
