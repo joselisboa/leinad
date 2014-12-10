@@ -1,3 +1,10 @@
+//
+// Leinad
+//
+// description: School project for OOP (Object Oriented Programming)
+// author: José Vieira Lisboa
+// url: https://github.com/joselisboa/leinad
+//
 #include <iomanip>
 #include <fstream>
 #include "header.h"
@@ -11,8 +18,27 @@ int main(int argc, char *varc)
     const short GRELHA_HEIGHT = 32;
     const short CONSOLA_WIDTH = 80;
     const short CONSOLA_HEIGHT = 33;
+    string const MAPA{ "c:\\GIT\\leinad\\mapa.txt" };
+    //string const RIVAIS{ "rivais.txt" };
 
     SetConsoleTitle(TEXT("Leinad"));
+
+    ifstream mapa(MAPA);
+    if (!mapa) {
+        cout << "> ERRO a abrir o ficheiro " << MAPA << endl;
+        return 1;
+    }
+
+    Caixas caixas;
+    short x, y, width, height;
+    char ch;
+    int attr;
+    while (mapa >> x) {
+        mapa >> y, mapa >> width, mapa >> height, mapa >> ch, mapa >> attr;
+        caixas.caixa(COORD{ x, y }, width, height, ch, attr);
+    }
+
+    //return 0;
 
     // grelha do mapa
     Grelha grelha(GRELHA_WIDTH, GRELHA_HEIGHT, GRELHA_OFFSET);
@@ -20,13 +46,6 @@ int main(int argc, char *varc)
     // o jogo
     Leinad leinad(CONSOLA_WIDTH, CONSOLA_HEIGHT, &grelha);
 
-    //TESTE caixas (elementos estáticos)
-    Caixas caixas;
-    caixas
-        .caixa(COORD{ 20, 5 }, 6, 12, '#', leinad.console.BLUE_FADE)
-        .caixa(COORD{15, 8}, 16, 3, '#', leinad.console.BLUE_FADE)
-        .caixa(COORD{ 26, 11 }, 1, 1, '$', leinad.console.YELLOW)
-        .caixa(COORD{6, 31}, 8, 5);
     leinad.caixas(&caixas);
 
     //TEST iniciar o jogo
