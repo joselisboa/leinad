@@ -1,3 +1,10 @@
+//
+// Leinad
+//
+// description: School project for OOP (Object Oriented Programming)
+// author: José Vieira Lisboa
+// url: https://github.com/joselisboa/leinad
+//
 #include "caixa.h"
 
 COORD const MAX = { 120, 60 };// ?
@@ -47,7 +54,7 @@ vector<Caixa> Caixas::caixas(COORD pos, short width, short height)
         P[3] = { P[0].X + caixa.width() - 1, P[0].Y + caixa.height() - 1 };
         for (int i = 0; i < 4; i++) {
             // dentro da zona
-            if (NOR(P[i].X - pos.X < 0, P[i].X - pos.X > width + 1) &&
+            if (NOR(P[i].X - pos.X < 0, P[i].X - pos.X > width + 3) &&
                 NOR(P[i].Y - pos.Y < 0, P[i].Y - pos.Y > height + 1)) {
                 caixas.push_back(caixa);
                 break;
