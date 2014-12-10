@@ -8,7 +8,7 @@
 #ifndef LEINAD_H
 #define LEINAD_H
 #include <vector>
-#include "c:\\htdocs\\ze\\ze.h"
+#include "ze.h"
 #include "jogador.h"
 #include "grelha.h"
 #include "caixa.h"
