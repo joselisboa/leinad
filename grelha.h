@@ -44,7 +44,7 @@ public:
     // escrever o conteúdo da grelha no ecrã
     Grelha &write(HANDLE handle) { WriteConsoleOutput(handle, _buffer, size(), COORD { 0, 0 }, &_box); return *this; }
 
-    Grelha(short width, short height);
+    Grelha(short width, short height, COORD offset = { 0, 0 });
     ~Grelha() { delete [] _buffer; }
 
     //TODO remover estas funções (ver Leinad render())

@@ -1,11 +1,12 @@
 #include "grelha.h"
 
 // construtor
-Grelha::Grelha(short width, short height)
+Grelha::Grelha(short width, short height, COORD offset)
 {
     _width = width, _height = height;
     _buffer = new CHAR_INFO[_width * _height];
-    _offset.X = 0, _offset.Y = 0;
+    //_offset.X = 0, _offset.Y = 0;
+    _offset = offset;
 
     _make_box();
     //_box = { _offset.X, _offset.Y, _offset.X + (_width - 1), _offset.Y + (_height - 1) };
@@ -15,15 +16,6 @@ Grelha::Grelha(short width, short height)
     ci.Char.UnicodeChar = ' ';
     fill(ci);
 }
-
-//Grelha &Grelha::size(short width, short height)
-//{
-//  _width = width;
-//  _height = height;
-//  _make_box();
-//
-//  return *this;
-//}
 
 void Grelha::_make_box()
 {
