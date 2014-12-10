@@ -89,28 +89,28 @@ BOOL Leinad::move()
     // evento do teclado
     if (console.input_record.EventType == KEY_EVENT && console.input_record.Event.KeyEvent.bKeyDown) {
         // apaga o jogador
-        drawPlayer(dummie, false);
+        drawPlayer(dummy, false);
 
         // nova posição do Jogador
         switch (console.input_record.Event.KeyEvent.wVirtualKeyCode) {
         case VK_RIGHT:
-            right(dummie);
+            right(dummy);
             break;
         case VK_LEFT:
-            left(dummie);
+            left(dummy);
             break;
         case VK_UP:
-            up(dummie);
+            up(dummy);
             break;
         case VK_DOWN:
-            down(dummie);
+            down(dummy);
             break;
         case 27: return false;
         default:;
 
         }
         // desenha o jogador
-        drawPlayer(dummie, true);
+        drawPlayer(dummy, true);
 
         console.cursorPosition(_screen.X - 16, _screen.Y-1);
         console.textColor(console.GREEN | console.GREEN_FADE << 4);
@@ -303,7 +303,10 @@ Leinad &Leinad::drawCaixa(Caixa &caixa)
 Leinad &Leinad::init() {
     (*_painel).fill(' ', console.CYAN_FADE << 4).write(console.output());
     (*_barra).fill(' ', console.GREEN_FADE << 4).write(console.output());
-    return render(dummie);
+
+    _dummy_panel();
+
+    return render(dummy);
 }
 
 Leinad &Leinad::render(Jogador jogador)
@@ -348,7 +351,7 @@ Leinad::Leinad(short largura, short altura, Grelha *grelha)
     // barra
     _barra = new Grelha(largura, 1, COORD{ 0, altura - 1 });
     //TESTE um jogador (Jogador serão carregados dum ficheiro)
-    dummie.pos(30, 15).imagem('@', console.CYAN | console.BLUE_FADE << 4);
+    dummy.pos(30, 15).imagem('@', console.CYAN | console.BLUE_FADE << 4);
 }
 
 Leinad::~Leinad()
@@ -373,4 +376,48 @@ bool Leinad::_colision(COORD pos, char ch)
 {
     if (_grelha->pos(pos).Char.UnicodeChar == ch) return true;
     return false;
+}
+
+void Leinad::_menu(COORD pos, WORD attr, string s)
+{
+    console.cursorPosition(pos).textColor(attr);
+    cout << (char)201 << (char)205 << (char)205 << (char)205 << (char)205 << (char)205 << (char)205 << (char)187 << endl;
+    console.cursorPosition(COORD{ pos.X, ++pos.Y });
+    cout << (char)186 << s << (char)186 << endl;
+    console.cursorPosition(COORD{ pos.X, ++pos.Y });
+    cout << (char)200 << (char)205 << (char)205 << (char)205 << (char)205 << (char)205 << (char)205 << (char)188 << endl;
+}
+
+void Leinad::_dummy_panel()
+{
+    console.paintString("DummyPanel", COORD{ 3, 1 }, console.RED_FADE | 8 << 4);
+
+    int y = 4;
+
+    console.paintString("Leinad 3", COORD{ 3, 1 + y }, 15 | console.CYAN_FADE << 4);
+    console.cursorPosition(COORD{ 3, 2 + y }).background(7);
+    cout << (char)3 << "   100%";
+    console.cursorPosition(COORD{ 3, 3 + y }).background(7);
+    cout << "$   3/50";
+    console.cursorPosition(COORD{ 3, 4 + y }).background(7);
+    cout << "?  11/35";
+    console.cursorPosition(COORD{ 3, 5 + y }).background(7);
+    cout << "!   1/16";
+
+    console.paintString("Leinads", COORD{ 3, 7 + y }, 1 | console.CYAN_FADE << 4);
+    console.cursorPosition(COORD{ 3, 8 + y }).background(8);
+    cout << "$  12/50";
+    console.cursorPosition(COORD{ 3, 9 + y }).background(8);
+    cout << "?  20/35";
+    console.cursorPosition(COORD{ 3, 10 + y }).background(8);
+    cout << "!   4/16";
+
+    console.paintString("Rivals", COORD{ 3, 12 + y }, 1 | console.CYAN_FADE << 4);
+    console.cursorPosition(COORD{ 3, 13 + y }).background(8);
+    cout << "$  21/50";
+    console.cursorPosition(COORD{ 3, 14 + y }).background(8);
+    cout << "?  15/35";
+    console.cursorPosition(COORD{ 3, 15 + y }).background(8);
+    cout << "!  14/16";
+
 }

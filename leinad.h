@@ -48,7 +48,11 @@ private:
     bool _colision(COORD pos, char = '#');
 
     //TESTE
-    Jogador dummie;
+    Jogador dummy;
+
+    // dummies
+    void _menu(COORD, WORD, string);
+    void _dummy_panel();
 
 public:
     BOOL menu();
@@ -70,16 +74,6 @@ public:
 
     //TODO mover para privado?
     Ze console;
-
-    void _menu(COORD pos, WORD attr, string s)
-    {
-        console.cursorPosition(pos).textColor(attr);
-        cout << (char)201 << (char)205 << (char)205 << (char)205 << (char)205 << (char)205 << (char)205 << (char)187 << endl;
-        console.cursorPosition(COORD{ pos.X, ++pos.Y });
-        cout << (char)186 << s << (char)186 << endl;
-        console.cursorPosition(COORD{ pos.X, ++pos.Y });
-        cout << (char)200 << (char)205 << (char)205 << (char)205 << (char)205 << (char)205 << (char)205 << (char)188 << endl;
-    }
 };
 
 #endif
