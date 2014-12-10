@@ -1,3 +1,10 @@
+//
+// Leinad
+//
+// description: School project for OOP (Object Oriented Programming)
+// author: José Vieira Lisboa
+// url: https://github.com/joselisboa/leinad
+//
 #ifndef LEINAD_H
 #define LEINAD_H
 #include <vector>
@@ -63,6 +70,7 @@ public:
 
     //TODO mover para privado?
     Ze console;
+
 };
 
 #endif

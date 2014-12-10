@@ -1,22 +1,47 @@
+//
+// Leinad
+//
+// description: School project for OOP (Object Oriented Programming)
+// author: José Vieira Lisboa
+// url: https://github.com/joselisboa/leinad
+//
 #include <iostream>
 #include "leinad.h"
 
 using namespace std;
 
+string const NOME{ "LEINAD" };
+string desc = "Trabalho Pratico POO | ISEC 2014 | 21230536, Jose Vieira Lisboa";
+
 BOOL Leinad::menu()
 {
-    console.background(console.MAGENTA_FADE);
-    system("cls");
+    console.cls(console.MAGENTA_FADE);
 
+    int x = (_screen.X - NOME.length()) / 2,  y = _screen.Y / 2;
+    console.cursorPosition(COORD{ x, y }).textColor(15 | console.MAGENTA_FADE << 4);
+    cout << NOME;
+
+    x = (_screen.X - desc.length()) / 2, y = _screen.Y - 2;
+    console.cursorPosition(COORD{ x, y }).textColor(13 | console.MAGENTA_FADE << 4);
+    cout << desc;
+
+    Sleep(1000);
+
+    x = (_screen.X - 28) / 2, y = 3*(_screen.Y/4);
+    console.cursorPosition(COORD{ x, y }).textColor( 8 | console.MAGENTA_FADE << 4);
+    //cout << "...espaco para continuar...";
+
+    while (console.ch() != 32);
+
+    console.cls(console.MAGENTA_FADE);
+
+    x = (_screen.X - desc.length()) / 2, y = _screen.Y - 2;
+    console.cursorPosition(COORD{ x, y }).textColor(13 | console.MAGENTA_FADE << 4);
+    cout << desc;
+
+    char ch;
     while (true) {
-
-        // ler input da consola
-        ReadConsoleInput(console.input_handle(), &console.input_record, 1, &console.info);
-        console.cursorPosition(0, 0);
-
-        // evento do teclado
-        if (console.input_record.EventType == KEY_EVENT && console.input_record.Event.KeyEvent.bKeyDown) {
-            switch (console.input_record.Event.KeyEvent.wVirtualKeyCode) {
+        switch (ch = console.ch()) {
             case VK_RIGHT:
                 cout << "RIGHT";
                 break;
@@ -34,13 +59,9 @@ BOOL Leinad::menu()
             // CONTINUAR
             case 13: return true;
             default:
-                cout << (char)console.input_record.Event.KeyEvent.wVirtualKeyCode;
-            }
-            cout << " (" << console.input_record.Event.KeyEvent.wVirtualKeyCode << ")    ";
+                console.cursorPosition(0, 0);
+                cout << "> " << ch << " " ;
         }
-
-        // limpar o buffer de input da consola
-        FlushConsoleInputBuffer(console.input_handle());
     }
 
     // sair normalmente ...
@@ -50,7 +71,7 @@ BOOL Leinad::menu()
 BOOL Leinad::move()
 {
     // ler input da consola
-    ReadConsoleInput(console.input_handle(), &console.input_record, 1, &console.info);
+    ReadConsoleInput(console.input(), &console.input_record, 1, &console.info);
 
     // evento do teclado
     if (console.input_record.EventType == KEY_EVENT && console.input_record.Event.KeyEvent.bKeyDown) {
@@ -84,7 +105,7 @@ BOOL Leinad::move()
     }
 
     // limpar o buffer de input da consola
-    FlushConsoleInputBuffer(console.input_handle());
+    FlushConsoleInputBuffer(console.input());
 
     // saída normal ...
     return true;
@@ -96,6 +117,7 @@ Leinad &Leinad::right(Jogador &jogador)
     pos.X++;
 
     if (_colision(pos)) return *this;
+
 
     // existe mapa não visível e penúltima linha da grelha
     if (pos.X + _M.X < _map.X - 1 && pos.X > _grelha->width() - 2) {
@@ -111,7 +133,7 @@ Leinad &Leinad::right(Jogador &jogador)
     }
 
     // última linha da grelha
-    if (pos.X > _grelha->width() - 1) pos.X = _grelha->width() - 1;
+    else if (pos.X > _grelha->width() - 1) pos.X = _grelha->width() - 1;
 
     jogador.pos(pos.X, pos.Y);
 
@@ -207,7 +229,7 @@ void Leinad::_draw(CHAR_INFO ci, COORD c)
     WORD textColor = console.textColor();
 
     // move cursor to required position
-    SetConsoleCursorPosition(console.output_handle(), c);
+    SetConsoleCursorPosition(console.output(), c);
 
     console.textColor(ci.Attributes);
     cout << (char) ci.Char.UnicodeChar;
@@ -221,7 +243,7 @@ void Leinad::_info(COORD c)
     WORD textColor = console.textColor();
     COORD G = _grelha->offset();
 
-    SetConsoleCursorPosition(console.output_handle(), COORD{ 0, _screen.Y - 1 });
+    SetConsoleCursorPosition(console.output(), COORD{ 0, _screen.Y - 1 });
     console.textColor(console.GREEN | console.GREEN_FADE << 4);
     cout << "O(" << G.X << "," << G.Y << ")  ";// offset da grelha (em relação à consola)
     cout << "S(" << c.X + G.X << "," << c.Y + G.Y << ")  ";// posição na consola
@@ -266,8 +288,8 @@ Leinad &Leinad::drawCaixa(Caixa &caixa)
 }
 
 Leinad &Leinad::init() {
-    (*_painel).fill(' ', console.CYAN_FADE << 4).write(console.output_handle());
-    (*_barra).fill(' ', console.GREEN_FADE << 4).write(console.output_handle());
+    (*_painel).fill(' ', console.CYAN_FADE << 4).write(console.output());
+    (*_barra).fill(' ', console.GREEN_FADE << 4).write(console.output());
     return render(dummie);
 }
 
@@ -284,7 +306,7 @@ Leinad &Leinad::render(Jogador jogador)
     }
 
     // escrever na consola
-    (*_grelha).write(console.output_handle());
+    (*_grelha).write(console.output());
 
     //TEMP mostrar o jogador
     drawPlayer(jogador);
