@@ -25,46 +25,59 @@ BOOL Leinad::menu()
     console.cursorPosition(COORD{ x, y }).textColor(13 | console.MAGENTA_FADE << 4);
     cout << desc;
 
-    Sleep(1000);
+    // esperar que se carregue uma tecla
+    while (!console.ch());
 
-    x = (_screen.X - 28) / 2, y = 3*(_screen.Y/4);
-    console.cursorPosition(COORD{ x, y }).textColor( 8 | console.MAGENTA_FADE << 4);
-    //cout << "...espaco para continuar...";
-
-    while (console.ch() != 32);
-
+    // descrição na consola
     console.cls(console.MAGENTA_FADE);
-
     x = (_screen.X - desc.length()) / 2, y = _screen.Y - 2;
     console.cursorPosition(COORD{ x, y }).textColor(13 | console.MAGENTA_FADE << 4);
     cout << desc;
 
-    char ch;
+    // opções inicias do menu (desactivado)
+    bool play = true, enabled = false;
+    COORD O = { (_screen.X - 6) / 2, _screen.Y / 4 };
+    _menu(O, 1 | console.MAGENTA_FADE << 4, " PLAY ");
+    _menu(COORD{ O.X, O.Y + 4 }, 1 | console.MAGENTA_FADE << 4, " EXIT ");
+
+    //TODO delegar esta tarefa a uma função
     while (true) {
-        switch (ch = console.ch()) {
-            case VK_RIGHT:
-                cout << "RIGHT";
-                break;
-            case VK_LEFT:
-                cout << "LEFT";
-                break;
+        switch (console.ch()) {
             case VK_UP:
-                cout << "UP";
-                break;
             case VK_DOWN:
-                cout << "DOWN";
+                if (!enabled) {
+                    enabled = true;
+                    _menu(O, 1 | console.MAGENTA << 4, " PLAY ");
+                    break;
+                }
+                if (play) {
+                    play = !play;
+                    _menu(O, 1 | console.MAGENTA_FADE << 4, " PLAY ");
+                    _menu(COORD{ O.X,  O.Y + 4}, 1 | console.MAGENTA << 4, " EXIT ");
+                }
+                else {
+                    play = !play;
+                    _menu(O, 1 | console.MAGENTA << 4, " PLAY ");
+                    _menu(COORD{ O.X, O.Y + 4 }, 1 | console.MAGENTA_FADE << 4, " EXIT ");
+                }
                 break;
-            // SAIR (escape)
-            case 27: return false;
-            // CONTINUAR
-            case 13: return true;
-            default:
-                console.cursorPosition(0, 0);
-                cout << "> " << ch << " " ;
+
+            // ENTER KEY
+            case 13:
+                if (enabled) {
+                    if (play) return true;
+                    else {
+                        console.cls(console.BLACK);
+                        console.foreground(8);
+                        return false;
+                    }
+                }
+                break;
+            default:;
         }
     }
 
-    // sair normalmente ...
+    // sair normalmente
     return true;
 }
 
