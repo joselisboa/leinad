@@ -1,6 +1,7 @@
 
 # Visual Studio
 Leinad/
+Debug/
 *.opensdf
 *.sdf
 *.sln
