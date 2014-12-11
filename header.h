@@ -14,7 +14,7 @@
 // testa a classe Grelha
 void testeGrelha()
 {
-    Grelha grelha(40, 20);
+    Grelha grelha({ { 40, 20 }, { 0, 0 } });
     grelha.testes();
     grelha.offset(COORD{ 21, 3 }).fill('?', Ze().RED_FADE).write(Ze().output());
     grelha.offset(COORD{ 15, 5 }).fill('#', Ze().MAGENTA_FADE).write(Ze().output());

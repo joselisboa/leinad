@@ -8,9 +8,15 @@
 #ifndef GRELHA_H
 #define GRELHA_H
 #include <Windows.h>
+#include "ze.h"
 #include <iostream>
 
 using namespace std;
+
+typedef struct _moldura {
+    COORD pos;
+    DIM2 dim;
+} GRELHA, FRAME;
 
 class Grelha
 {
@@ -51,7 +57,7 @@ public:
     // escrever o conteúdo da grelha no ecrã
     Grelha &write(HANDLE handle) { WriteConsoleOutput(handle, _buffer, size(), COORD { 0, 0 }, &_box); return *this; }
 
-    Grelha(short width, short height, COORD offset = { 0, 0 });
+    Grelha(GRELHA config);
     ~Grelha() { delete [] _buffer; }
 
     //TODO remover estas funções (ver Leinad render())

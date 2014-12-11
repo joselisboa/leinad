@@ -15,11 +15,6 @@
 
 using namespace std;
 
-typedef struct _moldura {
-    COORD pos;
-    DIM2 dim;
-} GRELHA, FRAME;
-
 typedef struct _leinad {
     FRAME consola;
     FRAME grelha;

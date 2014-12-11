@@ -20,12 +20,10 @@ int main(int argc, char *varc)
     // largura e altura da consola
     config.consola.dim = DIM2 { 80, 33 };
 
-    // grelha do mapa (zona visível)
+    // grelha (da zona visível) do mapa
     config.grelha = GRELHA {
-        // posição na consola
-        COORD { 16, 0 },
-        // dimensões
-        DIM2 { 64, 32 }
+        { 16, 0 },// posição (na consola)
+        { 64, 32 }// dimensões
     };
 
     // ficheiros ...

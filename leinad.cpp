@@ -385,15 +385,16 @@ Leinad &Leinad::render(Jogador jogador)
 Leinad::Leinad(LEINAD const CONFIG)
 {
     // não mostrar o cursor e configurar dimensão da consola
-	console.hideCursor().screenSize(CONFIG.consola.dim.width, CONFIG.consola.dim.height);
+    console.hideCursor().screenSize(CONFIG.consola.dim.width, CONFIG.consola.dim.height);
 
     //TODO remove this usage
     // tamanho janela
-	_screen.X = CONFIG.consola.dim.width, _screen.Y = CONFIG.consola.dim.height;
+    _screen.X = CONFIG.consola.dim.width, _screen.Y = CONFIG.consola.dim.height;
 
     //Grelha grelha(GRELHA_WIDTH, GRELHA_HEIGHT, GRELHA_OFFSET);
     //_grelha = new Grelha(config.grelha);
-	_grelha = new Grelha(CONFIG.grelha.dim.width, CONFIG.grelha.dim.height, CONFIG.grelha.pos);
+    //_grelha = new Grelha(CONFIG.grelha.dim.width, CONFIG.grelha.dim.height, CONFIG.grelha.pos);
+    _grelha = new Grelha(CONFIG.grelha);
 
     //DEFAULT posição da grelha no mapa é a origem
     _M = { 0, 0 };
@@ -403,17 +404,17 @@ Leinad::Leinad(LEINAD const CONFIG)
 
     // painel
     //_painel = new Grelha(config.painel);
-    _painel = new Grelha(16, _map.Y, COORD{ 0, 0 });
+    _painel = new Grelha(GRELHA{ { 16, _map.Y }, { 0, 0 } });
 
     // barra
     //_barra = new Grelha(config.barra);
-	_barra = new Grelha(CONFIG.consola.dim.width, 1, COORD{ 0, CONFIG.consola.dim.height - 1 });
+    _barra = new Grelha(GRELHA{ { CONFIG.consola.dim.width, 1 }, { 0, CONFIG.consola.dim.height - 1 } });
 
     //TESTE um jogador (Jogador serão carregados dum ficheiro)
     dummy.pos(30, 15).imagem('@', console.CYAN | console.BLUE_FADE << 4);
 
     // carregar o mapa
-	caixas(CONFIG.mapa);
+    caixas(CONFIG.mapa);
 }
 
 // colisão com obstáculo

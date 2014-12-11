@@ -8,12 +8,12 @@
 #include "grelha.h"
 
 // construtor
-Grelha::Grelha(short width, short height, COORD offset)
+Grelha::Grelha(GRELHA config)
 {
-    _width = width, _height = height;
+    _width = config.dim.width , _height = config.dim.width;
     _buffer = new CHAR_INFO[_width * _height];
     //_offset.X = 0, _offset.Y = 0;
-    _offset = offset;
+    _offset = config.pos;
 
     _make_box();
     //_box = { _offset.X, _offset.Y, _offset.X + (_width - 1), _offset.Y + (_height - 1) };
