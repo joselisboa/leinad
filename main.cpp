@@ -15,13 +15,13 @@ int main(int argc, char *varc)
     SetConsoleTitle(TEXT("Leinad"));
 
     // configuração do jogo
-    LEINAD CONFIG;//TODO const
+    LEINAD config;
 
     // largura e altura da consola
-    CONFIG.consola.dim = DIM2 { 80, 33 };
+    config.consola.dim = DIM2 { 80, 33 };
 
     // grelha do mapa (zona visível)
-    CONFIG.grelha = GRELHA {
+    config.grelha = GRELHA {
         // posição na consola
         COORD { 16, 0 },
         // dimensões
@@ -29,12 +29,12 @@ int main(int argc, char *varc)
     };
 
     // ficheiros ...
-    CONFIG.mapa = "..\\mapa.txt";
-    CONFIG.splash = "..\\leinad.txt";
+    config.mapa = "..\\mapa.txt";
+    config.splash = "..\\leinad.txt";
     //config.rivais = "rivais.txt"
 
     // criar o jogo
-    Leinad leinad(CONFIG);
+    Leinad leinad(config);
 
     // iniciar o jogo
     while (leinad.menu()) {

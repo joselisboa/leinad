@@ -102,7 +102,7 @@ public:
     Leinad &init();
     Leinad &render(Jogador);
 
-    Leinad(LEINAD);
+    Leinad(LEINAD const);
     ~Leinad();
 
     Leinad &caixas(string filename);
