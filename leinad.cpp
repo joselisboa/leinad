@@ -7,61 +7,87 @@
 //
 #include <iostream>
 #include "leinad.h"
-
+#include <fstream>
 using namespace std;
 
-string const NOME{ "LEINAD" };
-string desc = "Trabalho Pratico POO | ISEC 2014 | 21230536, Jose Vieira Lisboa";
+namespace leinad
+{
+    string const NOME{ "leinad" };
+    string desc = "Trabalho Pratico POO | ISEC 2014 | 21230536, Jose Vieira Lisboa";
+}
 
 BOOL Leinad::menu()
 {
     console.cls(console.MAGENTA_FADE);
 
-    int x = (_screen.X - NOME.length()) / 2,  y = _screen.Y / 2;
+    int x = 0,  y = _screen.Y / 4;
     console.cursorPosition(COORD{ x, y }).textColor(15 | console.MAGENTA_FADE << 4);
-    cout << NOME;
 
-    x = (_screen.X - desc.length()) / 2, y = _screen.Y - 2;
+    ifstream title("..\\leinad.txt");
+    if (!title) {
+        cout << "ERRO a abrir ficheiro\n";
+        return 1;
+    }
+
+    char c;
+    title >> std::noskipws;// não saltar whitespace
+    while (title >> c) { cout << c; }
+
+    x = (_screen.X - leinad::desc.length()) / 2, y = _screen.Y - 2;
     console.cursorPosition(COORD{ x, y }).textColor(13 | console.MAGENTA_FADE << 4);
-    cout << desc;
+    cout << leinad::desc;
 
     // esperar que se carregue uma tecla
     while (!console.ch());
 
     // descrição na consola
     console.cls(console.MAGENTA_FADE);
-    x = (_screen.X - desc.length()) / 2, y = _screen.Y - 2;
+    x = (_screen.X - leinad::desc.length()) / 2, y = _screen.Y - 2;
     console.cursorPosition(COORD{ x, y }).textColor(13 | console.MAGENTA_FADE << 4);
-    cout << desc;
-
-    // opções inicias do menu (desactivado)
-    bool play = true, enabled = false;
-    COORD O = { (_screen.X - 6) / 2, _screen.Y / 4 };
-    _menu(O, 1 | console.MAGENTA_FADE << 4, " PLAY ");
-    _menu(COORD{ O.X, O.Y + 4 }, 1 | console.MAGENTA_FADE << 4, " EXIT ");
+    cout << leinad::desc;
 
     //TODO delegar esta tarefa a uma função
+    bool play = true, enabled = false;
+    COORD O = { (_screen.X - 6) / 2, _screen.Y / 4 };
+    //
+    auto menuHelper = [](Ze &console, COORD pos, WORD attr, string s)
+    {
+        console.cursorPosition(pos).textColor(attr);
+        cout << (char)201 << (char)205 << (char)205 << (char)205 << (char)205 << (char)205 << (char)205 << (char)187 << endl;
+        console.cursorPosition(COORD{ pos.X, ++pos.Y });
+        cout << (char)186 << s << (char)186 << endl;
+        console.cursorPosition(COORD{ pos.X, ++pos.Y });
+        cout << (char)200 << (char)205 << (char)205 << (char)205 << (char)205 << (char)205 << (char)205 << (char)188 << endl;
+        return 0;
+    };
+    //
+    auto menuToggle = [&play, &enabled, &O, &menuHelper](Ze &console) {
+        if (!enabled) {
+            enabled = true;
+            menuHelper(console, O, 1 | console.MAGENTA << 4, " PLAY ");
+            return 0;
+        }
+
+        WORD attr0, attr1;
+        if (play) attr0 = 1 | console.MAGENTA_FADE << 4, attr1 = 1 | console.MAGENTA << 4;
+        else attr0 = 1 | console.MAGENTA << 4, attr1 = 1 | console.MAGENTA_FADE << 4;
+
+        play = !play;
+        menuHelper(console, O, attr0, " PLAY ");
+        menuHelper(console, COORD{ O.X, O.Y + 4 }, attr1, " EXIT ");
+
+        return 0;
+    };
+    // opções inicias do menu (desactivado)
+    menuHelper(console, O, 1 | console.MAGENTA_FADE << 4, " PLAY ");
+    menuHelper(console, COORD{ O.X, O.Y + 4 }, 1 | console.MAGENTA_FADE << 4, " EXIT ");
+    //
     while (true) {
         switch (console.ch()) {
             case VK_UP:
             case VK_DOWN:
-                if (!enabled) {
-                    enabled = true;
-                    _menu(O, 1 | console.MAGENTA << 4, " PLAY ");
-                    break;
-                }
-                if (play) {
-                    play = !play;
-                    _menu(O, 1 | console.MAGENTA_FADE << 4, " PLAY ");
-                    _menu(COORD{ O.X,  O.Y + 4}, 1 | console.MAGENTA << 4, " EXIT ");
-                }
-                else {
-                    play = !play;
-                    _menu(O, 1 | console.MAGENTA << 4, " PLAY ");
-                    _menu(COORD{ O.X, O.Y + 4 }, 1 | console.MAGENTA_FADE << 4, " EXIT ");
-                }
+                menuToggle(console);
                 break;
-
             // ENTER KEY
             case 13:
                 if (enabled) {
@@ -286,6 +312,28 @@ Leinad &Leinad::drawPlayer(Jogador &jogador, bool flag)
     return *this;
 }
 
+Leinad &Leinad::caixas(string filename)
+{
+    _caixas = new Caixas;
+
+    ifstream mapa(filename);
+    if (!mapa) {
+        cout << "> ERRO a abrir o ficheiro " << filename << endl;
+        exit(1);
+    }
+    short x, y, width, height;
+    char ch;
+    int attr;
+    while (mapa >> x) {
+        mapa >> y, mapa >> width, mapa >> height, mapa >> ch, mapa >> attr;
+        _caixas->caixa(COORD{ x, y }, width, height, ch, attr);
+    }
+
+    // redimencionar os limites de movimento do mapa
+    _map = _caixas->size();
+    return *this;
+}
+
 Leinad &Leinad::drawCaixa(Caixa &caixa)
 {
     for (int x = caixa.pos().X; x < caixa.pos().X + caixa.width(); x++) {
@@ -300,7 +348,8 @@ Leinad &Leinad::drawCaixa(Caixa &caixa)
     return *this;
 }
 
-Leinad &Leinad::init() {
+Leinad &Leinad::init()
+{
     (*_painel).fill(' ', console.CYAN_FADE << 4).write(console.output());
     (*_barra).fill(' ', console.GREEN_FADE << 4).write(console.output());
 
@@ -333,31 +382,43 @@ Leinad &Leinad::render(Jogador jogador)
     return *this;
 }
 
-Leinad::Leinad(short largura, short altura, Grelha *grelha)
+Leinad::Leinad(LEINAD config)
 {
-    // não mostrar o cursor
-    console.hideCursor();
+    // não mostrar o cursor e configurar dimensão da consola
+    console.hideCursor().screenSize(config.consola.dim.width, config.consola.dim.height);
+
+    //TODO remove this usage
     // tamanho janela
-    _screen.X = largura, _screen.Y = altura;
-    console.screenSize(largura, altura);
-    //
-    _grelha = grelha;
+    _screen.X = config.consola.dim.width, _screen.Y = config.consola.dim.height;
+
+    //Grelha grelha(GRELHA_WIDTH, GRELHA_HEIGHT, GRELHA_OFFSET);
+    //_grelha = new Grelha(config.grelha);
+    _grelha = new Grelha(config.grelha.dim.width, config.grelha.dim.height, config.grelha.pos);
+
     //DEFAULT posição da grelha no mapa é a origem
     _M = { 0, 0 };
+
     //DEFAULT mapa tem dimensão da grelha
     _map = _grelha->size();
+
     // painel
+    //_painel = new Grelha(config.painel);
     _painel = new Grelha(16, _map.Y, COORD{ 0, 0 });
+
     // barra
-    _barra = new Grelha(largura, 1, COORD{ 0, altura - 1 });
+    //_barra = new Grelha(config.barra);
+    _barra = new Grelha(config.consola.dim.width, 1, COORD{ 0, config.consola.dim.height - 1 });
+
     //TESTE um jogador (Jogador serão carregados dum ficheiro)
     dummy.pos(30, 15).imagem('@', console.CYAN | console.BLUE_FADE << 4);
+
+    // carregar o mapa
+    caixas(config.mapa);
 }
 
 Leinad::~Leinad()
 {
-    delete _barra;
-    delete _painel;
+    delete _barra, _painel, _grelha;
 }
 
 void Leinad::info(string msg)
@@ -378,16 +439,8 @@ bool Leinad::_colision(COORD pos, char ch)
     return false;
 }
 
-void Leinad::_menu(COORD pos, WORD attr, string s)
-{
-    console.cursorPosition(pos).textColor(attr);
-    cout << (char)201 << (char)205 << (char)205 << (char)205 << (char)205 << (char)205 << (char)205 << (char)187 << endl;
-    console.cursorPosition(COORD{ pos.X, ++pos.Y });
-    cout << (char)186 << s << (char)186 << endl;
-    console.cursorPosition(COORD{ pos.X, ++pos.Y });
-    cout << (char)200 << (char)205 << (char)205 << (char)205 << (char)205 << (char)205 << (char)205 << (char)188 << endl;
-}
-
+//TEMP dummy panel
+//TODO usar Grelha painel
 void Leinad::_dummy_panel()
 {
     console.paintString("DummyPanel", COORD{ 3, 1 }, console.RED_FADE | 8 << 4);
@@ -419,5 +472,4 @@ void Leinad::_dummy_panel()
     cout << "?  15/35";
     console.cursorPosition(COORD{ 3, 15 + y }).background(8);
     cout << "!  14/16";
-
 }

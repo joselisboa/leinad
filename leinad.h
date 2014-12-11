@@ -15,6 +15,39 @@
 
 using namespace std;
 
+typedef struct _dim {
+    union dimension
+    {
+        int width;
+        int height;
+    };
+} DIM;
+
+typedef struct _dim2 {
+    int width;
+    int height;
+} DIM2;
+
+typedef struct _dim3 {
+    int width;
+    int height;
+    int depth;
+} DIM3;
+
+typedef struct _moldura {
+    COORD pos;
+    DIM2 dim;
+} GRELHA, FRAME;
+
+typedef struct _leinad {
+    FRAME consola;
+    FRAME grelha;
+    FRAME painel;
+    string mapa;
+    string splash;
+    string jogadores;
+} LEINAD;
+
 // Leinad
 //-------
 class Leinad
@@ -24,7 +57,7 @@ private:
     COORD _screen;
 
     // caixas (elementos estáticos)
-    Caixas *_caixas = nullptr;
+    Caixas *_caixas;
 
     // dimensão do mapa
     COORD _map;
@@ -47,11 +80,11 @@ private:
     void info(string);
     bool _colision(COORD pos, char = '#');
 
-    //TESTE
-    Jogador dummy;
+    // consola
+    Ze console;
 
-    // dummies
-    void _menu(COORD, WORD, string);
+    //TEMP dummies
+    Jogador dummy;
     void _dummy_panel();
 
 public:
@@ -63,17 +96,16 @@ public:
     Leinad &up(Jogador &);
     Leinad &down(Jogador &);
     Leinad &M(COORD M) { _M = M; return *this; }
-    Leinad &caixas(Caixas *caixas) { _caixas = caixas, _map = _caixas->size(); return *this; }
+    //Leinad &caixas(Caixas *caixas) { _caixas = caixas, _map = _caixas->size(); return *this; }
     Leinad &drawPlayer(Jogador &, bool flag = true);
     Leinad &drawCaixa(Caixa &caixa);
     Leinad &init();
     Leinad &render(Jogador);
 
-    Leinad(short, short, Grelha *);
+    Leinad(LEINAD);
     ~Leinad();
 
-    //TODO mover para privado?
-    Ze console;
+    Leinad &caixas(string filename);
 };
 
 #endif

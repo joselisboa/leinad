@@ -6,6 +6,7 @@
 // url: https://github.com/joselisboa/leinad
 //
 #include <Windows.h>
+#include <fstream>
 #include <iostream>
 #include <vector>
 #include "leinad.h"
