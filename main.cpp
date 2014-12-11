@@ -17,10 +17,10 @@ int main(int argc, char *varc)
     // configuração do jogo
     LEINAD config;
 
-    // dimensões da consola
+    // dimensões da consola (largura, altura)
     config.consola.dim = { 80, 33 };
 
-    // grelha do mapa; posição na consola (x, y) e dimensões (largura e altura)
+    // posição na consola (x, y) e dimensões (largura, altura) da grelha do mapa
     config.grelha = {{ 16, 0 }, { 64, 32 }};
 
     // ficheiros ...
