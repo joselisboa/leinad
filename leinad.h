@@ -31,7 +31,7 @@ class Leinad
 private:
     COORD _screen;// dimensão da consola
     Caixas *_caixas;// elementos estáticos
-    COORD _map;// dimensão do mapa
+    COORD _map;// dimensão do mapa //TODO mudar estrutura para DIM2
     COORD _M;// offset da grelha no mapa
     Grelha *_grelha;// grelha do mapa
     Grelha *_painel;// painel de pontuação

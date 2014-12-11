@@ -387,34 +387,28 @@ Leinad::Leinad(LEINAD const CONFIG)
     // não mostrar o cursor e configurar dimensão da consola
     console.hideCursor().screenSize(CONFIG.consola.dim.width, CONFIG.consola.dim.height);
 
-    //TODO remove this usage
+    //TODO remover _screen (e obter a dimensão a partir da consola)
     // tamanho janela
     _screen.X = CONFIG.consola.dim.width, _screen.Y = CONFIG.consola.dim.height;
-
-    //Grelha grelha(GRELHA_WIDTH, GRELHA_HEIGHT, GRELHA_OFFSET);
-    //_grelha = new Grelha(config.grelha);
-    //_grelha = new Grelha(CONFIG.grelha.dim.width, CONFIG.grelha.dim.height, CONFIG.grelha.pos);
-    _grelha = new Grelha(CONFIG.grelha);
 
     //DEFAULT posição da grelha no mapa é a origem
     _M = { 0, 0 };
 
     //DEFAULT mapa tem dimensão da grelha
-    _map = _grelha->size();
+    _map = CONFIG.grelha.pos;
 
-    // painel
-    //_painel = new Grelha(config.painel);
+    // grelha do mapa // painel // barra
+    _grelha = new Grelha(CONFIG.grelha);
     _painel = new Grelha(GRELHA{ { 16, _map.Y }, { 0, 0 } });
-
-    // barra
-    //_barra = new Grelha(config.barra);
     _barra = new Grelha(GRELHA{ { CONFIG.consola.dim.width, 1 }, { 0, CONFIG.consola.dim.height - 1 } });
 
-    //TESTE um jogador (Jogador serão carregados dum ficheiro)
+    //TEMP um jogador (Jogador serão carregados dum ficheiro)
     dummy.pos(30, 15).imagem('@', console.CYAN | console.BLUE_FADE << 4);
 
     // carregar o mapa
     caixas(CONFIG.mapa);
+
+    // ...
 }
 
 // colisão com obstáculo
