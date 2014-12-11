@@ -53,35 +53,19 @@ typedef struct _leinad {
 class Leinad
 {
 private:
-    // dimensão da consola
-    COORD _screen;
-
-    // caixas (elementos estáticos)
-    Caixas *_caixas;
-
-    // dimensão do mapa
-    COORD _map;
-
-    // offset da grelha no mapa
-    COORD _M;
-
-    // grelha do mapa
-    Grelha *_grelha;
-
-    // painel de pontuação
-    Grelha *_painel;
-
-    // barra de informação
-    Grelha *_barra;
+    COORD _screen;// dimensão da consola
+    Caixas *_caixas;// elementos estáticos
+    COORD _map;// dimensão do mapa
+    COORD _M;// offset da grelha no mapa
+    Grelha *_grelha;// grelha do mapa
+    Grelha *_painel;// painel de pontuação
+    Grelha *_barra;// barra de informação
+    Ze console;// consola
 
     // funções ajudantes
     void _draw(CHAR_INFO, COORD);
     void _info(COORD c);
-    void info(string);
     bool _colision(COORD pos, char = '#');
-
-    // consola
-    Ze console;
 
     //TEMP dummies
     Jogador dummy;
@@ -96,16 +80,14 @@ public:
     Leinad &up(Jogador &);
     Leinad &down(Jogador &);
     Leinad &M(COORD M) { _M = M; return *this; }
-    //Leinad &caixas(Caixas *caixas) { _caixas = caixas, _map = _caixas->size(); return *this; }
+    Leinad &caixas(string filename);
     Leinad &drawPlayer(Jogador &, bool flag = true);
     Leinad &drawCaixa(Caixa &caixa);
     Leinad &init();
     Leinad &render(Jogador);
 
     Leinad(LEINAD const);
-    ~Leinad();
-
-    Leinad &caixas(string filename);
+    ~Leinad() { delete _barra, _painel, _grelha; }
 };
 
 #endif

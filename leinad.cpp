@@ -416,22 +416,6 @@ Leinad::Leinad(LEINAD const CONFIG)
 	caixas(CONFIG.mapa);
 }
 
-Leinad::~Leinad()
-{
-    delete _barra, _painel, _grelha;
-}
-
-void Leinad::info(string msg)
-{
-    WORD textColor = console.textColor();
-
-    console.cursorPosition(COORD{ 10, _screen.Y - 1 });
-    //SetConsoleCursorPosition(console.output_handle(), COORD{ 10, _screen.Y - 1 });
-    console.textColor(console.GREEN | console.GREEN_FADE << 4);
-    cout << " < " << msg << ">   ";
-    console.textColor(textColor);
-}
-
 // colisão com obstáculo
 bool Leinad::_colision(COORD pos, char ch)
 {
@@ -446,7 +430,6 @@ void Leinad::_dummy_panel()
     console.paintString("DummyPanel", COORD{ 3, 1 }, console.RED_FADE | 8 << 4);
 
     int y = 4;
-
     console.paintString("Leinad 3", COORD{ 3, 1 + y }, 15 | console.CYAN_FADE << 4);
     console.cursorPosition(COORD{ 3, 2 + y }).background(7);
     cout << (char)3 << "   100%";
