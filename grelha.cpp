@@ -10,13 +10,9 @@
 // construtor
 Grelha::Grelha(GRELHA config)
 {
-    _width = config.dim.width , _height = config.dim.width;
-    _buffer = new CHAR_INFO[_width * _height];
-    //_offset.X = 0, _offset.Y = 0;
-    _offset = config.pos;
+    dim(config.dim).offset(config.pos);
 
-    _make_box();
-    //_box = { _offset.X, _offset.Y, _offset.X + (_width - 1), _offset.Y + (_height - 1) };
+    _buffer = new CHAR_INFO[_dim.width * _dim.height];
 
     CHAR_INFO ci;
     ci.Attributes = 8;// Ze().BLUE | Ze().BLUE_FADE << 4;
@@ -24,17 +20,17 @@ Grelha::Grelha(GRELHA config)
     fill(ci);
 }
 
-void Grelha::_make_box()
+void Grelha::_makeBox()
 {
-    _box =  { _offset.X, _offset.Y, _offset.X + (_width - 1), _offset.Y + (_height - 1) };
+    _box =  { _pos.X, _pos.Y, _pos.X + (_dim.width - 1), _pos.Y + (_dim.height - 1) };
 }
 
 // preenche a grelha com ...
 Grelha &Grelha::fill(CHAR_INFO ci)
 {
-    for (int y = 0; y < _height; y++) {
-        for (int x = 0; x < _width; x++) {
-            _buffer[x + y * _width] = ci;
+    for (int y = 0; y < _dim.height; y++) {
+        for (int x = 0; x < _dim.width; x++) {
+            _buffer[x + y * _dim.width] = ci;
         }
     }
     return *this;
@@ -52,14 +48,14 @@ Grelha &Grelha::fill(char ch, WORD attr)
 // obtém caractére da posição p
 CHAR_INFO Grelha::pos(COORD pos)
 {
-    int i = pos.X + (pos.Y * _width);
+    int i = pos.X + (pos.Y * _dim.width);
     return _buffer[i];
 }
 
 // coloca caractére na posição c
 Grelha &Grelha::pos(COORD pos, CHAR_INFO ci)
 {
-    int i = pos.X + (pos.Y * _width);
+    int i = pos.X + (pos.Y * _dim.width);
     _buffer[i] = ci;
     return *this;
 }
@@ -97,5 +93,5 @@ void Grelha::testes()
     cout << "> pos(COORD{5,29}).Char.UnicodeChar;// " << pos(COORD{ 5, 5 }).Char.UnicodeChar << endl;
     cout << "> (char) pos(COORD{5,29}).Char.UnicodeChar;// " << (char)pos(COORD{ 5, 5 }).Char.UnicodeChar << endl;
 
-    WriteConsoleOutput(GetStdHandle(STD_OUTPUT_HANDLE), _buffer, size(), _offset, &_box);
+    WriteConsoleOutput(GetStdHandle(STD_OUTPUT_HANDLE), _buffer, size(), _pos, &_box);
 }

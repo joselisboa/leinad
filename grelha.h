@@ -20,32 +20,37 @@ typedef struct _moldura {
 
 class Grelha
 {
-    // largura e altura da grelha
-    short _width;
-    short _height;
+    DIM2 _dim;// dimensões da grelha
+    COORD _pos;// posição da grelha
 
     // buffer e caixa da grelha
-    CHAR_INFO *_buffer;
+    CHAR_INFO *_buffer = nullptr;
     SMALL_RECT _box;
-    void _make_box();
-
-    // offset dagrelha
-    COORD _offset;
+    void _makeBox();
 
 public:
     // dimensões da grelha
-    short width() const { return _width; }
-    short height() const { return _height; }
-    COORD size() { return COORD{_width, _height}; }
-    Grelha &width(short width) { _width = width; _make_box(); return *this; }
-    Grelha &height(short height) { _height = height; _make_box(); return *this; }
-
+    short width() const { return _dim.width; }
+    short height() const { return _dim.height; }
+    
+    COORD size() { return COORD{ _dim.width, _dim.height}; }
+    
+    Grelha &width(short width) { _dim.width = width; _makeBox(); return *this; }
+    Grelha &height(short height) { _dim.height = height; _makeBox(); return *this; }
+    Grelha &dim(DIM2 size) { _dim = size; _makeBox();  return *this; }
+    DIM2 dim() { return _dim; }
+    FRAME frame() { return FRAME { _pos, _dim }; }
+    
     // can't change size becauso of *_buffer
     //Grelha &size(short width, short height);
 
     // posição da grelha
-    COORD offset() { return _offset; }
-    Grelha &offset(COORD offset) { _offset = offset; _make_box(); return *this; }
+    COORD pos2() { return _pos; }
+    Grelha &pos2(COORD pos) { _pos = pos; _makeBox(); return *this; }
+    
+    //TODO delete
+    COORD offset() { return pos2(); }
+    Grelha &offset(COORD offset) {return pos2(offset); }
 
     // elementos da grelha
     CHAR_INFO pos(COORD);
