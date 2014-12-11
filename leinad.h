@@ -15,25 +15,6 @@
 
 using namespace std;
 
-typedef struct _dim {
-    union dimension
-    {
-        int width;
-        int height;
-    };
-} DIM;
-
-typedef struct _dim2 {
-    int width;
-    int height;
-} DIM2;
-
-typedef struct _dim3 {
-    int width;
-    int height;
-    int depth;
-} DIM3;
-
 typedef struct _moldura {
     COORD pos;
     DIM2 dim;
