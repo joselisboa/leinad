@@ -280,7 +280,7 @@ void Leinad::_draw(CHAR_INFO ci, COORD c)
 void Leinad::_info(COORD c)
 {
     WORD textColor = console.textColor();
-    COORD G = _grelha->offset();
+    COORD G = _grelha->pos();
 
     SetConsoleCursorPosition(console.output(), COORD{ 0, _screen.Y - 1 });
     console.textColor(console.GREEN | console.GREEN_FADE << 4);
@@ -302,12 +302,12 @@ Leinad &Leinad::drawPlayer(Jogador &jogador, bool flag)
 
     // posição na consola
     COORD pos = jogador.pos();
-    pos.X += _grelha->offset().X;
-    pos.Y += _grelha->offset().Y;
+    pos.X += _grelha->pos().X;
+    pos.Y += _grelha->pos().Y;
 
     // desenhar na consola
     if (flag) _draw(jogador.imagem(), pos);
-    else _draw(_grelha->pos(jogador.pos()), pos);
+    else _draw(_grelha->el(jogador.pos()), pos);
 
     return *this;
 }
@@ -342,7 +342,7 @@ Leinad &Leinad::drawCaixa(Caixa &caixa)
 
             short X = x - _M.X, Y = y - _M.Y;
             if (!(X < 0) && !(X >= _grelha->width()) && !(Y < 0) && !(Y >= _grelha->height()))
-                _grelha->pos(COORD{ X, Y }, caixa.ci());
+                _grelha->el(COORD{ X, Y }, caixa.ci());
         }
     }
     return *this;
@@ -414,7 +414,7 @@ Leinad::Leinad(LEINAD const CONFIG)
 // colisão com obstáculo
 bool Leinad::_colision(COORD pos, char ch)
 {
-    if (_grelha->pos(pos).Char.UnicodeChar == ch) return true;
+    if (_grelha->el(pos).Char.UnicodeChar == ch) return true;
     return false;
 }
 
