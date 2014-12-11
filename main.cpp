@@ -17,14 +17,11 @@ int main(int argc, char *varc)
     // configuração do jogo
     LEINAD config;
 
-    // largura e altura da consola
-    config.consola.dim = DIM2 { 80, 33 };
+    // dimensões da consola
+    config.consola.dim = { 80, 33 };
 
-    // grelha (da zona visível) do mapa
-    config.grelha = GRELHA {
-        { 16, 0 },// posição (na consola)
-        { 64, 32 }// dimensões
-    };
+    // grelha do mapa; posição na consola (x, y) e dimensões (largura e altura)
+    config.grelha = {{ 16, 0 }, { 64, 32 }};
 
     // ficheiros ...
     config.mapa = "..\\mapa.txt";
@@ -39,7 +36,7 @@ int main(int argc, char *varc)
         leinad.init();
         // mover elemento dinâmico
         while (leinad.move()) {
-            //TODO mover elementos IA
+            //TODO AI (Artificial Inteligence)
         }
     }
 
