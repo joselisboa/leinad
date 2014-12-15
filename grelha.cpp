@@ -41,8 +41,7 @@ Grelha &Grelha::fill(char ch, WORD attr)
     CHAR_INFO ci;
     ci.Attributes = attr;
     ci.Char.UnicodeChar = ch;
-    fill(ci);
-    return *this;
+    return fill(ci);
 }
 
 // obtém caractére da posição p
