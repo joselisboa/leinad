@@ -5,8 +5,8 @@
 // author: José Vieira Lisboa
 // url: https://github.com/joselisboa/ze
 //
-#ifndef _ZE_H_
-#define _ZE_H_
+#ifndef ZE_H
+#define ZE_H
 
 #include <windows.h>
 #include <string>
