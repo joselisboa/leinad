@@ -5,7 +5,6 @@
 // author: José Vieira Lisboa
 // url: https://github.com/joselisboa/leinad
 //
-#include <iomanip>
 #include "header.h"
 
 using namespace std;
@@ -34,6 +33,7 @@ int main(int argc, char *varc)
     // iniciar o jogo
     while (leinad.menu()) {
         leinad.init();
+
         // mover elemento dinâmico
         while (leinad.move()) {
             //TODO AI (Artificial Inteligence)
