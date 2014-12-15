@@ -6,6 +6,7 @@
 // url: https://github.com/joselisboa/leinad
 //
 #include <iostream>
+#include <iomanip>
 #include "leinad.h"
 #include <fstream>
 using namespace std;
@@ -69,8 +70,8 @@ BOOL Leinad::menu()
         }
 
         WORD attr0, attr1;
-        if (play) attr0 = 1 | console.MAGENTA_FADE << 4, attr1 = 1 | console.MAGENTA << 4;
-        else attr0 = 1 | console.MAGENTA << 4, attr1 = 1 | console.MAGENTA_FADE << 4;
+        if (play) attr0 = console.MAGENTA | console.MAGENTA_FADE << 4, attr1 = 1 | console.MAGENTA << 4;
+        else attr0 = 1 | console.MAGENTA << 4, attr1 = console.MAGENTA | console.MAGENTA_FADE << 4;
 
         play = !play;
         menuHelper(console, O, attr0, " PLAY ");
@@ -79,8 +80,8 @@ BOOL Leinad::menu()
         return 0;
     };
     // opções inicias do menu (desactivado)
-    menuHelper(console, O, 1 | console.MAGENTA_FADE << 4, " PLAY ");
-    menuHelper(console, COORD{ O.X, O.Y + 4 }, 1 | console.MAGENTA_FADE << 4, " EXIT ");
+    menuHelper(console, O, console.MAGENTA | console.MAGENTA_FADE << 4, " PLAY ");
+    menuHelper(console, COORD{ O.X, O.Y + 4 }, console.MAGENTA | console.MAGENTA_FADE << 4, " EXIT ");
     //
     while (true) {
         switch (console.ch()) {
@@ -135,12 +136,13 @@ BOOL Leinad::move()
         default:;
 
         }
+
         // desenha o jogador
         drawPlayer(dummy, true);
 
-        console.cursorPosition(_screen.X - 16, _screen.Y-1);
+        console.cursorPosition(_screen.X - 10, _screen.Y-1);
         console.textColor(console.GREEN | console.GREEN_FADE << 4);
-        cout << "TECLA(" << console.input_record.Event.KeyEvent.wVirtualKeyCode << ")  ";
+        cout << "TECLA(" << console.input_record.Event.KeyEvent.wVirtualKeyCode << ")";
     }
 
     // limpar o buffer de input da consola
@@ -155,8 +157,8 @@ Leinad &Leinad::right(Jogador &jogador)
     COORD pos = jogador.pos();
     pos.X++;
 
+    // colisão?
     if (_colision(pos)) return *this;
-
 
     // existe mapa não visível e penúltima linha da grelha
     if (pos.X + _M.X < _map.X - 1 && pos.X > _grelha->width() - 2) {
@@ -284,11 +286,11 @@ void Leinad::_info(COORD c)
 
     SetConsoleCursorPosition(console.output(), COORD{ 0, _screen.Y - 1 });
     console.textColor(console.GREEN | console.GREEN_FADE << 4);
-    cout << "O(" << G.X << "," << G.Y << ")  ";// offset da grelha (em relação à consola)
-    cout << "S(" << c.X + G.X << "," << c.Y + G.Y << ")  ";// posição na consola
-    cout << "M(" << c.X + _M.X << "," << c.Y + _M.Y << ")  ";// posição no mapa
-    cout << "P(" << c.X << "," << c.Y << ")  ";// jogador
-    cout << "_M(" << _M.X << "," << _M.Y << ")  ";// grelha
+    cout << " O(" << setw(2) << G.X << "," << setw(2) << G.Y << ")  ";// offset da grelha (em relação à consola)
+    cout << "S(" << setw(2) << c.X + G.X << "," << setw(2) << c.Y + G.Y << ")  ";// posição na consola
+    cout << "M(" << setw(3) << c.X + _M.X << "," << setw(2) << c.Y + _M.Y << ")  ";// posição no mapa
+    cout << "P(" << setw(2) << c.X << "," << setw(2) << c.Y << ")  ";// jogador
+    cout << "_M(" << setw(2) << _M.X << "," << setw(2) << _M.Y << ")  ";// grelha
     cout << "MAPA: " << _map.X << "*" << _map.Y << "  ";// tamanho do mapa
 
     // restore console attributes
@@ -348,13 +350,19 @@ Leinad &Leinad::drawCaixa(Caixa &caixa)
     return *this;
 }
 
+// inicia o jogo
 Leinad &Leinad::init()
 {
+    // preencher o painel e escreve-lo na consola
     (*_painel).fill(' ', console.CYAN_FADE << 4).write(console.output());
+
+    // preencher a barra e escreve-lo na consola
     (*_barra).fill(' ', console.GREEN_FADE << 4).write(console.output());
 
+    //TEMP render o painel (painel falso)
     _dummy_panel();
 
+    // render o mapa
     return render(dummy);
 }
 
@@ -399,8 +407,13 @@ Leinad::Leinad(LEINAD const CONFIG)
 
     // grelha do mapa // painel // barra
     _grelha = new Grelha(CONFIG.grelha);
-    _painel = new Grelha(GRELHA{ { 16, _map.Y }, { 0, 0 } });
-    _barra = new Grelha(GRELHA{ { CONFIG.consola.dim.width, 1 }, { 0, CONFIG.consola.dim.height - 1 } });
+
+    // painel lateral
+    short painel_width = CONFIG.consola.dim.width - CONFIG.grelha.dim.width, painel_height = CONFIG.grelha.dim.height;
+    _painel = new Grelha(GRELHA{ COORD{ 0, 0 }, DIM2{ painel_width, painel_height } });
+
+    // barra inferior
+    _barra = new Grelha(GRELHA{ COORD{ 0, CONFIG.consola.dim.height - 1 }, DIM2{ CONFIG.consola.dim.width, 1 } });
 
     //TEMP um jogador (Jogador serão carregados dum ficheiro)
     dummy.pos(30, 15).imagem('@', console.CYAN | console.BLUE_FADE << 4);
@@ -423,7 +436,6 @@ bool Leinad::_colision(COORD pos, char ch)
 void Leinad::_dummy_panel()
 {
     console.paintString("DummyPanel", COORD{ 3, 1 }, console.RED_FADE | 8 << 4);
-
     int y = 4;
     console.paintString("Leinad 3", COORD{ 3, 1 + y }, 15 | console.CYAN_FADE << 4);
     console.cursorPosition(COORD{ 3, 2 + y }).background(7);
@@ -434,7 +446,6 @@ void Leinad::_dummy_panel()
     cout << "?  11/35";
     console.cursorPosition(COORD{ 3, 5 + y }).background(7);
     cout << "!   1/16";
-
     console.paintString("Leinads", COORD{ 3, 7 + y }, 1 | console.CYAN_FADE << 4);
     console.cursorPosition(COORD{ 3, 8 + y }).background(8);
     cout << "$  12/50";
@@ -442,7 +453,6 @@ void Leinad::_dummy_panel()
     cout << "?  20/35";
     console.cursorPosition(COORD{ 3, 10 + y }).background(8);
     cout << "!   4/16";
-
     console.paintString("Rivals", COORD{ 3, 12 + y }, 1 | console.CYAN_FADE << 4);
     console.cursorPosition(COORD{ 3, 13 + y }).background(8);
     cout << "$  21/50";
